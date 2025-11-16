@@ -149,15 +149,21 @@ export async function createSession(token?: string, verbose?: boolean): Promise<
 
   let socket: WebSocket;
   try {
-    socket = new WebSocket(token ? PROHOST : HOST, {
-      headers: {
+    // Only set headers if custom WebSocket headers are supported (not in browser)
+    const isCustomHeadersSupported = typeof WebSocket === "function" && typeof (globalThis as any).process !== "undefined" && (globalThis as any).process.versions?.node;
+    if (isCustomHeadersSupported) {
+      socket = new WebSocket(token ? PROHOST : HOST, {
+        headers: {
           "Origin": "https://www.tradingview.com",
           "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
           "Cache-Control": "no-cache",
           "Pragma": "no-cache",
-      },
-      followRedirects: true
-    });
+        },
+        followRedirects: true
+      });
+    } else {
+      socket = new WebSocket(token ? PROHOST : HOST);
+    }
   } catch (err) {
     throw new Error("WebSocket creation failed: " + (err instanceof Error ? err.message : String(err)));
   }
