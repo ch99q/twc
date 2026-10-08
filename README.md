@@ -174,13 +174,18 @@ Creates a new chart instance for symbol resolution and data access.
 const chart = await createChart(session);
 ```
 
-#### `chart.resolve(symbol, exchange)`
+#### `chart.resolve(symbol, exchange, adjustment?)`
 
 Resolves symbol information from the exchange.
+
+- `adjustment` (optional): `"splits"` (default) or `"dividends"` for dividend-adjusted prices
 
 ```typescript
 const symbol = await chart.resolve("AAPL", "NASDAQ");
 console.log(symbol.description); // "Apple Inc"
+
+// Dividend-adjusted data
+const adjusted = await chart.resolve("AAPL", "NASDAQ", "dividends");
 ```
 
 ### Series Data

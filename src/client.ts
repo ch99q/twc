@@ -528,17 +528,20 @@ export function request(session: Session, event: string, payload: Message): Prom
 let requestCounter = 0;
 const useId = () => (++requestCounter).toString(36);
 
+export type Adjustment = "splits" | "dividends";
+
 export interface Chart {
   id: string;
-  resolve: (symbol: string, exchange: string) => Promise<ResolveSymbol>;
+  resolve: (symbol: string, exchange: string, adjustment?: Adjustment) => Promise<ResolveSymbol>;
   close: () => void;
 }
 
 export function createChart(session: Session): Promise<Chart> {
   const chart: Chart = {
     id: `chart_${useId()}`,
-    resolve: (symbol: string, exchange: string) => {
-      return request(session, 'resolve_symbol', [chart.id, `symbol_${useId()}`, `${exchange}:${symbol}`]);
+    resolve: (symbol: string, exchange: string, adjustment: Adjustment = "splits") => {
+      const descriptor = `=${JSON.stringify({ symbol: `${exchange}:${symbol}`, adjustment })}`;
+      return request(session, 'resolve_symbol', [chart.id, `symbol_${useId()}`, descriptor]);
     },
     close: () => {
       session.send('chart_delete_session', [chart.id]);
