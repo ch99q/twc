@@ -1,6 +1,6 @@
 {
   "name": "@ch99q/twc",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "TradingView WebSocket Client",
   "type": "module",
   "main": "./dist/index.js",
